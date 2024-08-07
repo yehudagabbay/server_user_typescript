@@ -36,10 +36,9 @@ const corsOptions: cors.CorsOptions = {
   origin: 'https://server-user-typescript-2.onrender.com/', // Permet uniquement cette origine
   methods: ['GET', 'POST', 'PUT', 'DELETE'], // Permet ces méthodes HTTP
   allowedHeaders: ['Content-Type', 'Authorization'], // Permet ces en-têtes
-  credentials: true, // Permet l'envoi des cookies et des informations d'authentification
+  credentials: false, // Permet l'envoi des cookies et des informations d'authentification
 };
 
-app.use(cors(corsOptions));
 
 // Configurer les vues
 app.engine('.hbs', engine({ extname: '.hbs' }));
@@ -57,7 +56,9 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   res.setHeader('Access-Control-Allow-Credentials', 'true');
   next();
 });
+
 app.use(cors(corsOptions));
+
 // Démarrer le serveur
 app.listen(PORT, () => {
   console.log(`[SERVER] Server is live at http://localhost:${PORT}`);
