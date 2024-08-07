@@ -6,40 +6,21 @@ import userRouter from './user/user.routes';
 import { engine } from 'express-handlebars';
 import path from 'path';
 
-
-
 // Charger les variables d'environnement
-//load environment variables
-require('dotenv').config(dotenv)
-
+dotenv.config();
 
 // Définir le port
-//config process.env.PORT --> the live server port 
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 3000; // Ajout d'un port par défaut si process.env.PORT n'est pas défini
 
-
-// Créer l'application Express create the server 
-//create the application express 
+// Créer l'application Express
 const app: Express = express();
 app.use(express.json());
 
-
-
-//views
-app.engine('.hbs', engine({extname: '.hbs'}));
-app.set('view engine','.hbs');
-app.set('views',path.join(__dirname, 'views/'));
-
-
-
-app.use('/',userRouter);
-
 // Configurer Helmet pour la sécurité
-
 app.use(
   helmet.contentSecurityPolicy({
     directives: {
-      defaultSrc: ["'none'"],
+      defaultSrc: ["'self'"],
       scriptSrc: ["'self'", "https://cdn.jsdelivr.net"],
       styleSrc: ["'self'", "https://fonts.googleapis.com"],
       fontSrc: ["'self'", "https://fonts.gstatic.com"],
@@ -60,19 +41,24 @@ const corsOptions: cors.CorsOptions = {
 
 app.use(cors(corsOptions));
 
+// Configurer les vues
+app.engine('.hbs', engine({ extname: '.hbs' }));
+app.set('view engine', '.hbs');
+app.set('views', path.join(__dirname, 'views/'));
+
 // Routes utilisateur
 app.use('/api/users', userRouter);
 
-// Gestion des erreurs CORS
+// Gestion des erreurs CORS (si nécessaire, mais déjà couvert par `cors`)
 app.use((req: Request, res: Response, next: NextFunction) => {
-  res.setHeader('Access-Control-Allow-Origin', 'https://server-user-typescript-2.onrender.com/');
+  res.setHeader('Access-Control-Allow-Origin', 'http://localhost:5173');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   res.setHeader('Access-Control-Allow-Credentials', 'true');
   next();
 });
 
-// Démarrer le serveur start the server 
+// Démarrer le serveur
 app.listen(PORT, () => {
   console.log(`[SERVER] Server is live at http://localhost:${PORT}`);
 });
