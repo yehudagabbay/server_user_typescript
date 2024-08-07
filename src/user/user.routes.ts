@@ -19,7 +19,7 @@ userRouter
   .get('/', getAllUsers) /// ok 
   .get('/:name', getUserById)// ok
   .put('/', updateUser) // ok  // Add this line to enable PUT request to update user
-  .post('/', addUser)//ok
+  .post('/', addUser)  //ok
   .delete('/:id', deleteUserC)//ok
   .post('/log',loginUser )
 //   .post('/login', authenticateToken, (req, res) => {

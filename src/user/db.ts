@@ -28,12 +28,13 @@ export default class Db {
         }
     }
 
-    static async getUserByUserName(userName: string): Promise<User | undefined> {
+    static async getUserByUserEmail(Email: string): Promise<User | undefined> {
+        console.log(Email + ' function get user by mail ');
         try {
             const pool = await connect(Db.connectionString);
             const result: IResult<any> = await pool.request()
-                .input('UserName', userName)
-                .query('SELECT * FROM Users WHERE UserName = @UserName');
+                .input('Email', Email)
+                .query('SELECT * FROM Users WHERE Email = @Email');
             if (result.recordset.length > 0) {
                 const element = result.recordset[0];
                 return {
@@ -56,7 +57,7 @@ export default class Db {
 
     static async createUser(user: User): Promise<any> {
         try {
-            console.log(user.Password);
+            console.log(user.UserName);
             const pool = await connect(Db.connectionString);
             await pool.request()
                 .input('UserName', user.UserName)

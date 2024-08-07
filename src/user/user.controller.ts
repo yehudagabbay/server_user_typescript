@@ -1,9 +1,8 @@
 import { Request, Response } from "express";
 import { User } from "../types/user.type";
-import bcrypt, { hash, hashSync } from 'bcrypt';
+import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import Db from "./db";
-import { cryptPassword, findUserByCredentials } from "./user.model";
 import dotenv from 'dotenv';
 
 // Charger les variables d'environnement  
@@ -32,8 +31,9 @@ export async function getAllUsers(req: Request, res: Response) {
 // Récupérer un utilisateur par nom d'utilisateur
 export async function getUserById(req: Request, res: Response) {
   try {
+    
     let userName = req.params.name;  // Change to userName based on User type
-    let user = await Db.getUserByUserName(userName);
+    let user = await Db.getUserByUserEmail(userName);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
@@ -47,8 +47,8 @@ export async function getUserById(req: Request, res: Response) {
 // Ajouter un utilisateur
 export async function addUser(req: Request, res: Response) {
   try {
-    let {UserID, UserName, Email, Phone, Password, Birthday, AvatarUrl } = req.body;
-
+    let {UserName, Email, Phone, Password, Birthday } = req.body;
+      console.log(UserName);
     if (!UserName || !Email || !Password) {
       return res.status(400).json({ message: "All required fields must be provided" });
     }
@@ -57,13 +57,13 @@ export async function addUser(req: Request, res: Response) {
     
     // Assurez-vous que Birthday est converti en Date et AvatarUrl est une URL valide si nécessaire
     let user: User = {
-      UserID, // Placeholder pour l'ID de l'utilisateur (pour un exemple, il est toujours 0)
+      UserID:0, // Placeholder pour l'ID de l'utilisateur (pour un exemple, il est toujours 0)
       UserName,
       Email,
       Phone,
       Password ,
-      Birthday: new Date(Birthday),
-      AvatarUrl
+      Birthday,
+      AvatarUrl:'None'
     };
     
     await Db.createUser(user);
@@ -104,13 +104,16 @@ export async function updateUser(req: Request, res: Response) {
 }
 
 export const loginUser = async (req: Request, res: Response) => {
-  let { UserName, Password } = req.body;
+  let { Email, Password } = req.body;
+
+  console.log(req.body + " login user ");
 
   try {
     
     // Recherche de l'utilisateur par nom d'utilisateur
-    const user = await Db.getUserByUserName(UserName)
- 
+    const user = await Db.getUserByUserEmail(Email)
+    
+   
     if (!user) {
       return res.status(401).json({ message: 'Utilisateur non trouvé' });
     }
@@ -128,7 +131,7 @@ export const loginUser = async (req: Request, res: Response) => {
     });
 
     // Réponse avec le token
-    res.json({ token });
+    res.json({ token, user });
   } catch (error) {
     res.status(500).json({ message: 'Erreur serveur' });
   }

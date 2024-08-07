@@ -52,7 +52,7 @@ app.use(
 
 // Configurer CORS
 const corsOptions: cors.CorsOptions = {
-  origin: 'http://localhost:5555', // Permet uniquement cette origine
+  origin: 'http://localhost:5173', // Permet uniquement cette origine
   methods: ['GET', 'POST', 'PUT', 'DELETE'], // Permet ces méthodes HTTP
   allowedHeaders: ['Content-Type', 'Authorization'], // Permet ces en-têtes
   credentials: true, // Permet l'envoi des cookies et des informations d'authentification
