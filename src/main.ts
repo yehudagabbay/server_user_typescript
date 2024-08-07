@@ -10,7 +10,7 @@ import path from 'path';
 dotenv.config();
 
 // Définir le port
-const PORT = process.env.PORT!; // Ajout d'un port par défaut si process.env.PORT n'est pas défini
+const PORT = process.env.PORT || 3000; // Ajout d'un port par défaut si process.env.PORT n'est pas défini
 
 // Créer l'application Express
 const app: Express = express();
@@ -49,6 +49,15 @@ app.set('views', path.join(__dirname, 'views/'));
 // Routes utilisateur
 app.use('/api/users', userRouter);
 
+// Gestion des erreurs CORS (si nécessaire, mais déjà couvert par `cors`)
+app.use((req: Request, res: Response, next: NextFunction) => {
+  res.setHeader('Access-Control-Allow-Origin', 'https://server-user-typescript-2.onrender.com/');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  next();
+});
+app.use(cors(corsOptions));
 // Démarrer le serveur
 app.listen(PORT, () => {
   console.log(`[SERVER] Server is live at http://localhost:${PORT}`);
