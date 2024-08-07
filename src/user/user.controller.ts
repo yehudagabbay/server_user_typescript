@@ -1,6 +1,18 @@
 import { Request, Response } from "express";
 import { User } from "../types/user.type";
-import Db from "../utils/db";
+import bcrypt, { hash, hashSync } from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import Db from "./db";
+import { cryptPassword, findUserByCredentials } from "./user.model";
+import dotenv from 'dotenv';
+
+// Charger les variables d'environnement  
+dotenv.config();
+
+const SALT_ROUNDS = parseInt(process.env.SALT_ROUNDS as string) ;
+
+const JWT_SECRET = process.env.JWT_SECRET!;
+
 
 
 // Récupérer tous les utilisateurs
@@ -40,18 +52,20 @@ export async function addUser(req: Request, res: Response) {
     if (!UserName || !Email || !Password) {
       return res.status(400).json({ message: "All required fields must be provided" });
     }
-
+    
+    Password = await bcrypt.hash(Password, 10);
+    
     // Assurez-vous que Birthday est converti en Date et AvatarUrl est une URL valide si nécessaire
     let user: User = {
       UserID, // Placeholder pour l'ID de l'utilisateur (pour un exemple, il est toujours 0)
       UserName,
       Email,
       Phone,
-      Password,
+      Password ,
       Birthday: new Date(Birthday),
       AvatarUrl
     };
-
+    
     await Db.createUser(user);
     res.status(201).json({ message: "User created successfully" });
   } catch (error) {
@@ -89,8 +103,39 @@ export async function updateUser(req: Request, res: Response) {
   }
 }
 
+export const loginUser = async (req: Request, res: Response) => {
+  let { UserName, Password } = req.body;
+
+  try {
+    
+    // Recherche de l'utilisateur par nom d'utilisateur
+    const user = await Db.getUserByUserName(UserName)
+ 
+    if (!user) {
+      return res.status(401).json({ message: 'Utilisateur non trouvé' });
+    }
+
+    // Vérification du mot de passe
+    const isMatch = await bcrypt.compare(Password, user.Password);
+    
+    if (!isMatch) {
+      return res.status(401).json({ message: 'Mot de passe incorrect' });
+    }
+
+    // Création du token JWT
+    const token = jwt.sign({ UserID: user.UserID, UserName: user.UserName }, JWT_SECRET, {
+      expiresIn: '1h', // Expiration du token
+    });
+
+    // Réponse avec le token
+    res.json({ token });
+  } catch (error) {
+    res.status(500).json({ message: 'Erreur serveur' });
+  }
+};
+
 // Supprimer un utilisateur
-export async function deleteUser(req: Request, res: Response): Promise<void> {
+export async function deleteUserC(req: Request, res: Response): Promise<void> {
 
   const userId = req.params.id; // Utilisation d'un nom de paramètre plus clair
 
@@ -104,7 +149,7 @@ export async function deleteUser(req: Request, res: Response): Promise<void> {
   try {
 
    let resulte =  await Db.deleteUser(userId);
-   console .log(resulte);
+
    if (!resulte) {
     // Validation : Assure-toi que le utilisateur existe
      res.status(404).json({ message: 'User not found' });

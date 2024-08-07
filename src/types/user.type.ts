@@ -8,3 +8,12 @@ export type User = {
     AvatarUrl: string
 };
 
+export type UserType = {
+   
+    UserName: string,
+    Password: string,
+};
+
+export const db = {
+    users: [] as User[]
+};
