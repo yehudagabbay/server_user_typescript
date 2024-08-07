@@ -65,7 +65,7 @@ app.use('/api/users', userRouter);
 
 // Gestion des erreurs CORS
 app.use((req: Request, res: Response, next: NextFunction) => {
-  res.setHeader('Access-Control-Allow-Origin', 'http://localhost:5555');
+  res.setHeader('Access-Control-Allow-Origin', 'https://server-user-typescript-2.onrender.com/');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   res.setHeader('Access-Control-Allow-Credentials', 'true');
