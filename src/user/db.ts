@@ -7,12 +7,12 @@ dotenv.config();
 
 
 export default class Db {
-    private static connectionString: string = process.env.CONNECTION_STRING!;
+    private static connectionString: string = process.env.CONNECTION_STRING as string;
 
     static async getUsers(): Promise<User[] | undefined> {
         try {
+            console.log('fff');
             const pool = await connect(Db.connectionString);
-            console.log(pool);
             const result = await pool.request().query('SELECT * FROM Users');
             return result.recordset.map((element: any) => ({
                 UserID: element.UserID,
