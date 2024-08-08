@@ -17,6 +17,7 @@ const JWT_SECRET = process.env.JWT_SECRET!;
 // Récupérer tous les utilisateurs
 export async function getAllUsers(req: Request, res: Response) {
   try {
+    console.log(res);
     let users: User[] | undefined = await Db.getUsers();
     if (!users) {
       return res.status(404).json({ message: "No users found" });

@@ -1,5 +1,4 @@
 import express, { Express, Request, Response, NextFunction } from 'express';
-import helmet from 'helmet';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import userRouter from './user/user.routes';
@@ -10,33 +9,19 @@ import path from 'path';
 dotenv.config();
 
 // Définir le port
-const PORT = process.env.PORT ?? 3000; // Ajout d'un port par défaut si process.env.PORT n'est pas défini
+const PORT = process.env.PORT ?? 5555; // Ajout d'un port par défaut si process.env.PORT n'est pas défini
 
 // Créer l'application Express
 const app: Express = express();
 app.use(express.json());
 
-// Configurer Helmet pour la sécurité
-app.use(
-  helmet.contentSecurityPolicy({
-    directives: {
-      defaultSrc: ["'self'"],
-      scriptSrc: ["'self'", "https://cdn.jsdelivr.net"],
-      styleSrc: ["'self'", "https://fonts.googleapis.com"],
-      fontSrc: ["'self'", "https://fonts.gstatic.com"],
-      connectSrc: ["'self'"],
-      imgSrc: ["'self'", "data:"],
-      frameAncestors: ["'none'"],
-    },
-  })
-);
 
 // Configurer CORS
 const corsOptions: cors.CorsOptions = {
   origin: 'http://localhost:5173', // Permet uniquement cette origine
   methods: ['GET', 'POST', 'PUT', 'DELETE'], // Permet ces méthodes HTTP
   allowedHeaders: ['Content-Type', 'Authorization'], // Permet ces en-têtes
-  credentials: false, // Permet l'envoi des cookies et des informations d'authentification
+  credentials: true, // Permet l'envoi des cookies et des informations d'authentification
 };
 
 

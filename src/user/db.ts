@@ -12,6 +12,7 @@ export default class Db {
     static async getUsers(): Promise<User[] | undefined> {
         try {
             const pool = await connect(Db.connectionString);
+            console.log(pool);
             const result = await pool.request().query('SELECT * FROM Users');
             return result.recordset.map((element: any) => ({
                 UserID: element.UserID,
