@@ -28,11 +28,11 @@ export async function getAllUsers(req: Request, res: Response) {
   }
 }
 
-// Récupérer un utilisateur par nom d'utilisateur
+// קבלת משתמש על ידי שם משתמש
 export async function getUserById(req: Request, res: Response) {
   try {
     
-    let userName = req.params.name;  // Change to userName based on User type
+    let userName = req.params.name;  // שליפת userName מגוף הבקשה  שנשלחה מהלקוח
     let user = await Db.getUserByUserEmail(userName);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
@@ -44,7 +44,6 @@ export async function getUserById(req: Request, res: Response) {
   }
 }
 
-// Ajouter un utilisateur
 export async function addUser(req: Request, res: Response) {
   try {
     let {UserName, Email, Phone, Password, Birthday } = req.body;
@@ -55,9 +54,8 @@ export async function addUser(req: Request, res: Response) {
     
     Password = await bcrypt.hash(Password, 10);
     
-    // Assurez-vous que Birthday est converti en Date et AvatarUrl est une URL valide si nécessaire
     let user: User = {
-      UserID:0, // Placeholder pour l'ID de l'utilisateur (pour un exemple, il est toujours 0)
+      UserID:0, 
       UserName,
       Email,
       Phone,
@@ -74,7 +72,6 @@ export async function addUser(req: Request, res: Response) {
   }
 }
 
-// Mettre à jour un utilisateur
 export async function updateUser(req: Request, res: Response) {
   try {
 
@@ -84,9 +81,8 @@ export async function updateUser(req: Request, res: Response) {
       return res.status(400).json({ message: "Email and Password are required" });
     }
 
-    // Construire l'objet User avec les nouvelles données
     let user: User = {
-      UserID, // Placeholder pour l'ID de l'utilisateur (pour un exemple, il est toujours 0)
+      UserID, 
       UserName,
       Email,
       Phone,
@@ -110,7 +106,6 @@ export const loginUser = async (req: Request, res: Response) => {
 
   try {
     
-    // Recherche de l'utilisateur par nom d'utilisateur
     const user = await Db.getUserByUserEmail(Email)
     
    
@@ -118,7 +113,6 @@ export const loginUser = async (req: Request, res: Response) => {
       return res.status(401).json({ message: 'Utilisateur non trouvé' });
     }
 
-    // Vérification du mot de passe
     const isMatch = await bcrypt.compare(Password, user.Password);
     
     if (!isMatch) {
@@ -127,10 +121,9 @@ export const loginUser = async (req: Request, res: Response) => {
 
     // Création du token JWT
     const token = jwt.sign({ UserID: user.UserID, UserName: user.UserName }, JWT_SECRET, {
-      expiresIn: '1h', // Expiration du token
+      expiresIn: '1h', 
     });
 
-    // Réponse avec le token
     res.json({ token, user });
   } catch (error) {
     res.status(500).json({ message: 'Erreur serveur' });
