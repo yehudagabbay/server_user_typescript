@@ -1,28 +1,27 @@
 import { Request, Response } from "express";
 import { User } from "../types/user.type";
 import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
+import jwt from 'jsonwebtoken'; // ייבוא jwt ליצירת טוקן
 import Db from "./db";
-import dotenv from 'dotenv';
+import dotenv from 'dotenv'; // ייבוא dotenv לטעינת משתני סביבה
 
-// Charger les variables d'environnement  
+// טעינת משתני הסביבה
 dotenv.config();
 
-const SALT_ROUNDS = parseInt(process.env.SALT_ROUNDS as string) ;
+const SALT_ROUNDS = parseInt(process.env.SALT_ROUNDS as string); // הגדרת מספר סבבי ההצפנה
 
-const JWT_SECRET = process.env.JWT_SECRET!;
+const JWT_SECRET = process.env.JWT_SECRET!; // הגדרת המפתח הסודי ליצירת טוקן JWT
 
 
 
-// Récupérer tous les utilisateurs
 export async function getAllUsers(req: Request, res: Response) {
   try {
     console.log(res);
-    let users: User[] | undefined = await Db.getUsers();
+    let users: User[] | undefined = await Db.getUsers();// כל המשתמשים מבסיס נתונים
     if (!users) {
       return res.status(404).json({ message: "No users found" });
     }
-    res.status(200).json(users);  // Correction ici pour envoyer un tableau JSON
+    res.status(200).json(users);  // קבלת רשימת המשתמשים ךJSON
   } catch (error) {
     console.error('Error fetching users:', error);
     res.status(500).json({ message: "Internal Server Error", error });
